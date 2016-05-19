@@ -1,0 +1,26 @@
+{
+    "name": "karmia-storage",
+    "version": "0.1.0",
+    "description": "Storage module of Karmia JavaScript library",
+    "homepage": "https://github.com/fujimakishouten/karmia-storage",
+    "license": "MIT",
+    "author": "Kazuma Fujimaki <fujimaki-k@fujimakishouten.com>",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/fujimakishouten/karmia-storage.git"
+    },
+    "scripts": {
+        "test": "./node_modules/.bin/mocha ./test"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "co": ">=4.6.0",
+        "mocha": ">=2.4.5",
+        "expect.js": ">=0.3.1"
+    },
+    "engines": {
+        "node": ">=6.0.0"
+    }
+}
