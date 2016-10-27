@@ -213,6 +213,97 @@ describe('karmia-storage', function () {
                 });
             });
         });
+
+
+        describe('find', function () {
+            describe('Should find items', function () {
+                it('literal', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, i % 2);
+                        }
+
+                        expect(yield memory_storage.find(1)).to.eql([1, 1]);
+
+                        done();
+                    });
+                });
+
+                it('Object', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, {value: i % 2});
+                        }
+
+                        expect(yield memory_storage.find({value: 0})).to.eql([
+                            {value: 0},
+                            {value: 0},
+                            {value: 0}
+                        ]);
+
+                        done();
+                    });
+                });
+            });
+
+            describe('Should not find items', function () {
+                it('literal', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, i % 2);
+                        }
+
+                        expect(yield memory_storage.find(2)).to.eql([]);
+
+                        done();
+                    });
+                });
+
+                it('Object', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, {value: i % 2});
+                        }
+
+                        expect(yield memory_storage.find({value: 2})).to.eql([]);
+
+                        done();
+                    });
+                });
+            });
+        });
+
+        describe('remove', function () {
+            it('Should remove value', function (done) {
+                co(function* () {
+                    const size = 5,
+                        memory_storage = storage.memory({size: size});
+
+                    for (let i = 0; i < size; ++i) {
+                        yield memory_storage.store(i, i);
+                    }
+
+                    expect(memory_storage.buffer.length).to.be(size);
+                    yield memory_storage.remove(2);
+                    expect(memory_storage.buffer.length).to.be(size - 1);
+                    expect(memory_storage.map[2]).to.be(undefined);
+
+                    done();
+                });
+            });
+        });
     });
 });
 
