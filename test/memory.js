@@ -111,6 +111,24 @@ describe('karmia-storage', function () {
         });
 
         describe('set', function () {
+            it('Should store new value', function (done) {
+                co(function* () {
+                    const key = 'KEY',
+                        value = 'VALUE',
+                        memory_storage = storage.memory({size: 5});
+
+                    expect(memory_storage.buffer.length).to.be(0);
+                    yield memory_storage.set(key, value);
+                    expect(memory_storage.buffer.length).to.be(1);
+                    expect(memory_storage.buffer[0]).to.eql({
+                        key: key,
+                        value: value
+                    });
+
+                    done();
+                });
+            });
+
             it('Should update value', function (done) {
                 co(function* () {
                     const key = 'KEY',
@@ -131,33 +149,6 @@ describe('karmia-storage', function () {
                     });
 
                     done();
-                });
-            });
-
-            describe('Should be error', function () {
-                it('Not stored', function (done) {
-                    co(function* () {
-                        const memory_storage = storage.memory({size: 1});
-                        yield memory_storage.set('KEY_NOT_FOUND', 'VALUE');
-                    }).catch(function (error) {
-                        expect(error.code).to.be(404);
-                        expect(error.message).to.be('storage.key.not_found');
-
-                        done();
-                    });
-                });
-
-                it('Not exists', function (done) {
-                    co(function* () {
-                        const memory_storage = storage.memory({size: 1});
-                        yield memory_storage.store('KEY', 'VALUE');
-                        yield memory_storage.set('KEY_NOT_FOUND', 'VALUE');
-                    }).catch(function (error) {
-                        expect(error.code).to.be(404);
-                        expect(error.message).to.be('storage.key.not_found');
-
-                        done();
-                    });
                 });
             });
         });
