@@ -77,19 +77,84 @@ describe('karmia-storage', function () {
         });
 
         describe('count', function () {
-            it('Should count buffer', function (done) {
-                co(function* () {
-                    const size = 5,
-                        length = 3,
-                        memory_storage = storage.memory({size: size});
+            describe('Should count items', function () {
+                it('All items', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            length = 3,
+                            memory_storage = storage.memory({size: size});
 
-                    expect(yield memory_storage.count()).to.be(0);
-                    for (let i = 0; i < length; ++i) {
-                        yield memory_storage.store(i, i);
-                    }
-                    expect(yield memory_storage.count()).to.be(length);
+                        expect(yield memory_storage.count()).to.be(0);
+                        for (let i = 0; i < length; ++i) {
+                            yield memory_storage.store(i, i);
+                        }
+                        expect(yield memory_storage.count()).to.be(length);
 
-                    done();
+                        done();
+                    });
+                });
+
+
+                it('literal', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, i % 2);
+                        }
+
+                        expect(yield memory_storage.count(1)).to.be(2);
+
+                        done();
+                    });
+                });
+
+                it('Object', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, {value: i % 2});
+                        }
+
+                        expect(yield memory_storage.count({value: 0})).to.be(3);
+
+                        done();
+                    });
+                });
+            });
+
+            describe('Should not find items', function () {
+                it('literal', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, i % 2);
+                        }
+
+                        expect(yield memory_storage.count(2)).to.be(0);
+
+                        done();
+                    });
+                });
+
+                it('Object', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            memory_storage = storage.memory({size: size});
+
+                        for (let i = 0; i < size; ++i) {
+                            yield memory_storage.store(i, {value: i % 2});
+                        }
+
+                        expect(yield memory_storage.count({value: 2})).to.be(0);
+
+                        done();
+                    });
                 });
             });
         });
