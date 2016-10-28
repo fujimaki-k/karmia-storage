@@ -1,6 +1,6 @@
 {
     "name": "karmia-storage",
-    "version": "0.1.6",
+    "version": "0.2.0",
     "description": "Storage module of Karmia JavaScript library",
     "homepage": "https://github.com/fujimakishouten/karmia-storage",
     "license": "MIT",
@@ -17,6 +17,7 @@
     },
     "devDependencies": {
         "co": ">=4.6.0",
+        "karmia-storage-adapter-memory": ">=0.1.0",
         "mocha": ">=2.4.5",
         "expect.js": ">=0.3.1"
     },
