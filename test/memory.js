@@ -159,199 +159,41 @@ describe('karmia-storage', function () {
 
         describe('count', function () {
             describe('Should count items', function () {
-                describe('All items', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                length = 3,
-                                memory_storage = storage.memory({size: size});
+                it('Promise', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            length = 3,
+                            memory_storage = storage.memory({size: size});
 
-                            expect(yield memory_storage.count()).to.be(0);
-                            for (let i = 0; i < length; ++i) {
-                                yield memory_storage.store(i, i);
-                            }
-                            expect(yield memory_storage.count()).to.be(length);
+                        expect(yield memory_storage.count()).to.be(0);
+                        for (let i = 0; i < length; ++i) {
+                            yield memory_storage.store(i, i);
+                        }
+                        expect(yield memory_storage.count()).to.be(length);
 
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                length = 3,
-                                memory_storage = storage.memory({size: size});
-
-                            expect(yield memory_storage.count()).to.be(0);
-                            for (let i = 0; i < length; ++i) {
-                                yield memory_storage.store(i, i);
-                            }
-
-                            memory_storage.count(function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.be(length);
-
-                                done();
-                            });
-                        });
+                        done();
                     });
                 });
 
-                describe('Literal condition', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
+                it('Callback', function (done) {
+                    co(function* () {
+                        const size = 5,
+                            length = 3,
+                            memory_storage = storage.memory({size: size});
 
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
+                        expect(yield memory_storage.count()).to.be(0);
+                        for (let i = 0; i < length; ++i) {
+                            yield memory_storage.store(i, i);
+                        }
+
+                        memory_storage.count(function (error, result) {
+                            if (error) {
+                                return done(error);
                             }
 
-                            expect(yield memory_storage.count(1)).to.be(2);
+                            expect(result).to.be(length);
 
                             done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-
-                            memory_storage.count(1, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.be(2);
-
-                                done();
-                            });
-                        });
-                    });
-                });
-
-                describe('Object conditions', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            expect(yield memory_storage.count({value: 0})).to.be(3);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-
-                            memory_storage.count({value: 0}, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.be(3);
-
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
-
-            describe('Should not find items', function () {
-                describe('Literal conditions', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-                            expect(yield memory_storage.count(2)).to.be(0);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-                            memory_storage.count(2, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.be(0);
-
-                                done();
-                            });
-                        });
-                    });
-                });
-
-                describe('Object conditions', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            expect(yield memory_storage.count({value: 2})).to.be(0);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            memory_storage.count({value: 2}, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.be(0);
-
-                                done();
-                            });
                         });
                     });
                 });
@@ -595,173 +437,6 @@ describe('karmia-storage', function () {
 
                                     done();
                                 });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-
-
-        describe('find', function () {
-            describe('Should find items', function () {
-                describe('Literal condision', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-                            expect(yield memory_storage.find(1)).to.eql([1, 1]);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-                            memory_storage.find(1, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.eql([1, 1]);
-
-                                done();
-                            });
-                        });
-                    });
-                });
-
-                describe('Object conditions', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            expect(yield memory_storage.find({value: 0})).to.eql([
-                                {value: 0},
-                                {value: 0},
-                                {value: 0}
-                            ]);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            memory_storage.find({value: 0}, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.eql([
-                                    {value: 0},
-                                    {value: 0},
-                                    {value: 0}
-                                ]);
-
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
-
-            describe('Should not find items', function () {
-                describe('Literal conditions', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-                            expect(yield memory_storage.find(2)).to.eql([]);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, i % 2);
-                            }
-
-                            memory_storage.find(2, function (error, result) {
-                                if (error) {
-                                    return done(error);
-                                }
-
-                                expect(result).to.eql([]);
-
-                                done();
-                            });
-                        });
-                    });
-                });
-
-                describe('Object conditions', function () {
-                    it('Promise', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            expect(yield memory_storage.find({value: 2})).to.eql([]);
-
-                            done();
-                        });
-                    });
-
-                    it('Callback', function (done) {
-                        co(function* () {
-                            const size = 5,
-                                memory_storage = storage.memory({size: size});
-
-                            for (let i = 0; i < size; ++i) {
-                                yield memory_storage.store(i, {value: i % 2});
-                            }
-
-                            memory_storage.find({value: 2}, function (error, result) {
-                                if (error) {
-                                    return done();
-                                }
-
-                                expect(result).to.eql([]);
-
-                                done();
                             });
                         });
                     });
