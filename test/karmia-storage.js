@@ -119,11 +119,14 @@ describe('karmia-storage', function () {
         });
     });
 
-    describe('count', function () {
-        const storage = karmia_storage(karmia_storage_adapter_memory(options));
+    describe('storage', function () {
+        const storages = karmia_storage(karmia_storage_adapter_memory(options)),
+            name = 'user';
 
         before(function (done) {
-            storage.connect().then(function () {
+            storages.connect().then(function () {
+                const storage = storages.storage(name);
+
                 return fixture.reduce(function (promise, data) {
                     return promise.then(function () {
                         storage.set(data.key, data.value);
@@ -131,54 +134,74 @@ describe('karmia-storage', function () {
                 }, Promise.resolve());
             }).then(function () {
                 return done();
-            }).catch(function (error) {
-                return done(error);
+            }).catch(done);
+        });
+
+        after(function (done) {
+            storages.storages = {};
+
+            done();
+        });
+
+        describe('count', function () {
+            describe('Should count items', function () {
+                it('Promise', function (done) {
+                    const storage = storages.storage(name);
+                    storage.count().then(function (result) {
+                        expect(result).to.be(9);
+
+                        done();
+                    }).catch(done);
+                });
+
+                it('Callback', function (done) {
+                    const storage = storages.storage(name);
+                    storage.count(function (error, result) {
+                        if (error) {
+                            return done(error);
+                        }
+
+                        expect(result).to.be(9);
+
+                        done();
+                    });
+                });
             });
         });
 
-        describe('Should count items', function () {
+        describe('get', function () {
             it('Promise', function (done) {
-                storage.count().then(function (result) {
-                    expect(result).to.be(9);
+                const storage = storages.storage(name),
+                    data = fixture[0];
+                storage.get(data.key).then(function (result) {
+                    expect(result).to.be(data.value);
 
                     done();
                 }).catch(done);
             });
 
             it('Callback', function (done) {
-                storage.count(function (error, result) {
+                const storage = storages.storage(name),
+                    data = fixture[0];
+                storage.get(data.key, function (error, result) {
                     if (error) {
                         return done(error);
                     }
 
-                    expect(result).to.be(9);
+                    expect(result).to.be(data.value);
 
                     done();
                 });
             });
         });
 
-        after(function (done) {
-            Promise.all(fixture.map(function (data) {
-                return storage.remove(data.key);
-            })).then(function () {
-                return done();
-            }).catch(function (error) {
-                return done(error);
-            });
-        });
-    });
-
-    describe('get', function () {
-        describe('Should get value', function () {
+        describe('set', function () {
             it('Promise', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE';
+                const storage = storages.storage(name),
+                    key = 10,
+                    value = 'Yukiho Kosaka';
 
-                storage.connect().then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
+                storage.get(key).then(function (result) {
                     expect(result).to.be(null);
 
                     return storage.set(key, value);
@@ -194,203 +217,95 @@ describe('karmia-storage', function () {
             });
 
             it('Callback', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE';
+                const storage = storages.storage(name),
+                    key = 10,
+                    value = 'Yukiho Kosaka';
 
-                storage.connect().then(function () {
+                storage.get(key, function (error, result) {
+                    if (error) {
+                        return done(error);
+                    }
+
+                    expect(result).to.be(null);
+
+                    storage.set(key, value, function (error) {
+                        if (error) {
+                            return done(error);
+                        }
+
+                        storage.get(key, function (error, result) {
+                            if (error) {
+                                return done(error);
+                            }
+
+                            expect(result).to.be(value);
+
+                            storage.remove(key, done);
+                        })
+                    });
+                });
+            });
+        });
+
+        describe('remove', function () {
+            it('Promise', function (done) {
+                const storage = storages.storage(name),
+                    key = 10,
+                    value = 'Yukiho Kosaka';
+
+                storage.set(key, value).then(function () {
+                    return storage.get(key);
+                }).then(function (result) {
+                    expect(result).to.be(value);
+
+                    return storage.remove(key);
+                }).then(function (result) {
+                    expect(result).to.be(undefined);
+
+                    return storage.get(key);
+                }).then(function (result) {
+                    expect(result).to.be(null);
+
+                    done();
+                })
+            });
+
+            it('Callback', function (done) {
+                const storage = storages.storage(name),
+                    key = 10,
+                    value = 'Yukiho Kosaka';
+
+                storage.set(key, value, function (error) {
+                    if (error) {
+                        return done(error);
+                    }
+
                     storage.get(key, function (error, result) {
                         if (error) {
                             return done(error);
                         }
 
-                        expect(result).to.be(null);
+                        expect(result).to.be(value);
 
-                        storage.set(key, value).then(function () {
+                        storage.remove(key, function (error, result) {
+                            if (error) {
+                                return done(error);
+                            }
+
+                            expect(result).to.be(result);
+
                             storage.get(key, function (error, result) {
                                 if (error) {
                                     return done(error);
                                 }
 
-                                expect(result).to.be(value);
+                                expect(result).to.be(null);
 
                                 done();
                             });
-                        }).catch(done);
+                        });
                     });
                 });
-            });
-        });
-    });
-
-    describe('set', function () {
-        describe('Should set new value', function () {
-            it('Promise', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE';
-
-                storage.connect().then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(null);
-
-                    return storage.set(key, value);
-                }).then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(value);
-
-                    return storage.remove(key);
-                }).then(function () {
-                    done();
-                }).catch(done);
-            });
-
-            it('Callback', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE';
-
-                storage.connect().then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(null);
-
-                    return storage.set(key, value, function (error) {
-                        if (error) {
-                            return done(error);
-                        }
-
-                        storage.get(key).then(function (result) {
-                            expect(result).to.be(value);
-
-                            storage.remove(key).then(function () {
-                                done();
-                            }).catch(done);
-                        }).catch(done);
-                    });
-                }).catch(done);
-            });
-        });
-
-        describe('Should update value', function () {
-            it('Promise', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE',
-                    update = 'UPDATE';
-
-                storage.connect().then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(null);
-
-                    return storage.set(key, value);
-                }).then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(value);
-
-                    return storage.set(key, update);
-                }).then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(update);
-
-                    return storage.remove(key);
-                }).then(function () {
-                    done();
-                }).catch(done);
-            });
-
-            it('Callback', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE',
-                    update = 'UPDATE';
-
-                storage.connect().then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(null);
-
-                    return storage.set(key, value, function (error) {
-                        if (error) {
-                            return done(error);
-                        }
-
-                        storage.get(key).then(function (result) {
-                            expect(result).to.be(value);
-
-                            storage.set(key, update).then(function () {
-                                storage.get(key, function (error, result) {
-                                    if (error) {
-                                        return done(error);
-                                    }
-
-                                    expect(result).to.be(update);
-
-                                    storage.remove(key).then(function () {
-                                        done();
-                                    }).catch(done);
-                                });
-                            }).catch(done);
-                        }).catch(done);
-                    });
-                }).catch(done);
-            });
-        });
-    });
-
-    describe('remove', function () {
-        describe('Should remove value', function () {
-            it('Promise', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE';
-
-                storage.connect().then(function () {
-                    return storage.set(key, value);
-                }).then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(value);
-
-                    return storage.remove(key);
-                }).then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(null);
-
-                    done();
-                }).catch(done);
-            });
-
-            it('Callbacck', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options)),
-                    key = 'KEY',
-                    value = 'VALUE';
-
-                storage.connect().then(function () {
-                    return storage.set(key, value);
-                }).then(function () {
-                    return storage.get(key);
-                }).then(function (result) {
-                    expect(result).to.be(value);
-
-                    storage.remove(key, function (error) {
-                        if (error) {
-                            return done(error);
-                        }
-
-                        storage.get(key).then(function (result) {
-                            expect(result).to.be(null);
-
-                            done();
-                        }).catch(done);
-                    });
-                }).catch(done);
             });
         });
     });
