@@ -16,14 +16,14 @@ const expect = require('expect.js'),
 describe('karmia-storage', function () {
     describe('getConnection', function () {
         it('Should not get connection', function (done) {
-            const storage = karmia_storage(karmia_storage_adapter_memory(options));
+            const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
             expect(storage.getConnection()).to.be(undefined);
 
             done();
         });
 
         it('Should get connection', function (done) {
-            const storage = karmia_storage(karmia_storage_adapter_memory(options));
+            const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
             storage.connect().then(function () {
                 const connection = storage.getConnection();
                 expect(connection.constructor.name).to.be('KarmiaStorageAdapterMemory');
@@ -36,7 +36,7 @@ describe('karmia-storage', function () {
     describe('connect', function () {
         describe('Should connect to database', function () {
             it('Promise', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options));
+                const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
                 storage.connect().then(function () {
                     const connection = storage.getConnection();
                     expect(connection.constructor.name).to.be('KarmiaStorageAdapterMemory');
@@ -48,7 +48,7 @@ describe('karmia-storage', function () {
             });
 
             it('Callback', function (done) {
-                const storage = karmia_storage(karmia_storage_adapter_memory(options));
+                const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
                 storage.connect(function (error) {
                     if (error) {
                         return done(error);
@@ -67,7 +67,7 @@ describe('karmia-storage', function () {
         describe('Should disconnect database', function () {
             describe('Connected', function () {
                 it('Promise', function (done) {
-                    const storage = karmia_storage(karmia_storage_adapter_memory(options));
+                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
                     storage.connect().then(function () {
                         return storage.disconnect();
                     }).then(function (result) {
@@ -78,7 +78,7 @@ describe('karmia-storage', function () {
                 });
 
                 it('Callback', function (done) {
-                    const storage = karmia_storage(karmia_storage_adapter_memory(options));
+                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
                     storage.connect().then(function () {
                         storage.disconnect(function (error, result) {
                             if (error) {
@@ -95,7 +95,7 @@ describe('karmia-storage', function () {
 
             describe('Not connected', function () {
                 it('Promise', function (done) {
-                    const storage = karmia_storage(karmia_storage_adapter_memory(options));
+                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
                     storage.disconnect().then(function (result) {
                         expect(result).to.be(undefined);
 
@@ -104,7 +104,7 @@ describe('karmia-storage', function () {
                 });
 
                 it('Callback', function (done) {
-                    const storage = karmia_storage(karmia_storage_adapter_memory(options));
+                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
                     storage.disconnect(function (error, result) {
                         if (error) {
                             return done(error);
@@ -120,7 +120,7 @@ describe('karmia-storage', function () {
     });
 
     describe('storage', function () {
-        const storages = karmia_storage(karmia_storage_adapter_memory(options)),
+        const storages = new karmia_storage(new karmia_storage_adapter_memory(options)),
             name = 'user';
 
         before(function (done) {

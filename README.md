@@ -14,7 +14,7 @@ const karmia_storage = require('karmia-storage');
 ### Memory
 #### constructor(options)
 ```JavaScript
-const storage = karmia_storage.memory({size: 100000});
+const storage = new karmia_storage.memory({size: 100000});
 ```
 ##### Options
 - size: Max items of buffer (Default: 10000)
