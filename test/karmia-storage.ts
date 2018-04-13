@@ -5,25 +5,28 @@
 
 
 
+// Import modules
+import KarmiaStorageAdapterMemory = require("karmia-storage-adapter-memory");
+import KarmiaStorage = require("../");
+import Fixture = require("./resources/fixture");
+
+
 // Variables
-const expect = require('expect.js'),
-    karmia_storage_adapter_memory = require('karmia-storage-adapter-memory'),
-    karmia_storage = require('../'),
-    fixture = require('./resource/fixture'),
-    options = {};
+const expect = require("expect.js");
+const options = {};
 
 
 describe('karmia-storage', function () {
     describe('getConnection', function () {
         it('Should not get connection', function (done) {
-            const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+            const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
             expect(storage.getConnection()).to.be(undefined);
 
             done();
         });
 
         it('Should get connection', function (done) {
-            const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+            const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
             storage.connect().then(function () {
                 const connection = storage.getConnection();
                 expect(connection.constructor.name).to.be('KarmiaStorageAdapterMemory');
@@ -36,7 +39,7 @@ describe('karmia-storage', function () {
     describe('connect', function () {
         describe('Should connect to database', function () {
             it('Promise', function (done) {
-                const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+                const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
                 storage.connect().then(function () {
                     const connection = storage.getConnection();
                     expect(connection.constructor.name).to.be('KarmiaStorageAdapterMemory');
@@ -48,7 +51,7 @@ describe('karmia-storage', function () {
             });
 
             it('Callback', function (done) {
-                const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+                const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
                 storage.connect(function (error) {
                     if (error) {
                         return done(error);
@@ -67,7 +70,7 @@ describe('karmia-storage', function () {
         describe('Should disconnect database', function () {
             describe('Connected', function () {
                 it('Promise', function (done) {
-                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+                    const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
                     storage.connect().then(function () {
                         return storage.disconnect();
                     }).then(function (result) {
@@ -78,7 +81,7 @@ describe('karmia-storage', function () {
                 });
 
                 it('Callback', function (done) {
-                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+                    const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
                     storage.connect().then(function () {
                         storage.disconnect(function (error, result) {
                             if (error) {
@@ -95,7 +98,7 @@ describe('karmia-storage', function () {
 
             describe('Not connected', function () {
                 it('Promise', function (done) {
-                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+                    const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
                     storage.disconnect().then(function (result) {
                         expect(result).to.be(undefined);
 
@@ -104,7 +107,7 @@ describe('karmia-storage', function () {
                 });
 
                 it('Callback', function (done) {
-                    const storage = new karmia_storage(new karmia_storage_adapter_memory(options));
+                    const storage = new KarmiaStorage(new KarmiaStorageAdapterMemory(options));
                     storage.disconnect(function (error, result) {
                         if (error) {
                             return done(error);
@@ -120,14 +123,14 @@ describe('karmia-storage', function () {
     });
 
     describe('storage', function () {
-        const storages = new karmia_storage(new karmia_storage_adapter_memory(options)),
+        const storages = new KarmiaStorage(new KarmiaStorageAdapterMemory(options)),
             name = 'user';
 
         before(function (done) {
             storages.connect().then(function () {
                 const storage = storages.storage(name);
 
-                return fixture.reduce(function (promise, data) {
+                return Fixture.reduce(function (promise, data) {
                     return promise.then(function () {
                         storage.set(data.key, data.value);
                     });
@@ -138,7 +141,7 @@ describe('karmia-storage', function () {
         });
 
         after(function (done) {
-            storages.storages = {};
+            storages.adapter = new KarmiaStorageAdapterMemory(options);
 
             done();
         });
@@ -172,7 +175,7 @@ describe('karmia-storage', function () {
         describe('get', function () {
             it('Promise', function (done) {
                 const storage = storages.storage(name),
-                    data = fixture[0];
+                    data = Fixture[0];
                 storage.get(data.key).then(function (result) {
                     expect(result).to.be(data.value);
 
@@ -182,7 +185,7 @@ describe('karmia-storage', function () {
 
             it('Callback', function (done) {
                 const storage = storages.storage(name),
-                    data = fixture[0];
+                    data = Fixture[0];
                 storage.get(data.key, function (error, result) {
                     if (error) {
                         return done(error);
@@ -320,4 +323,3 @@ describe('karmia-storage', function () {
  * c-hanging-comment-ender-p: nil
  * End:
  */
-
